@@ -11,7 +11,9 @@ screen = pygame.display.set_mode((width, height))
 
 font = pygame.font.SysFont('Arial', 30)
 
-objects = []
+buttons = []
+
+my_turn = False
 
 
 class Button():
@@ -35,12 +37,12 @@ class Button():
 
         self.buttonSurf = font.render(buttonText, True, (20, 20, 20))
 
-        self.alreadyPressed = False
+        buttons.append(self)
 
-        objects.append(self)
+    def remote_change_colour(self, colour: str):
+        self.fillColors['pressed'] = colour
 
     def process(self):
-
         mousePos = pygame.mouse.get_pos()
 
         if self.Pressed:
@@ -49,15 +51,16 @@ class Button():
             self.buttonSurface.fill(self.fillColors['normal'])
 
         # take some action only when mouse is on the button
-        if self.buttonRect.collidepoint(mousePos):
-            if not self.Pressed:
-                self.buttonSurface.fill(self.fillColors['hover'])
-
-            if pygame.mouse.get_pressed(num_buttons=3)[0]:
-                # make it one press only button
+        if my_turn:
+            if self.buttonRect.collidepoint(mousePos):
                 if not self.Pressed:
-                    self.Pressed = True
-                    self.onclickFunction(self)
+                    self.buttonSurface.fill(self.fillColors['hover'])
+
+                if pygame.mouse.get_pressed(num_buttons=3)[0]:
+                    # make it one press only button
+                    if not self.Pressed:
+                        self.Pressed = True
+                        self.onclickFunction(self)
 
         # display
         self.buttonSurface.blit(self.buttonSurf, [
@@ -73,16 +76,17 @@ def myFunction(button):
 
 customButton = Button(30, 30, 400, 100, 1, 'Button One (one Press only)', myFunction)
 customButton = Button(30, 180, 400, 100, 2, 'Button Two (one Press only)', myFunction)
+customButton = Button(30, 330, 400, 100, 3, 'Button Three (one Press only)', myFunction)
 
 # Game loop.
 while True:
-    screen.fill((20, 20, 20))
+    screen.fill((80, 80, 60))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-    for object in objects:
+    for object in buttons:
         object.process()
 
     pygame.display.flip()

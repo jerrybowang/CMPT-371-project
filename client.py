@@ -1,6 +1,8 @@
 # Imports
 import sys
 import pygame
+import threading
+import socket
 
 # Configuration
 pygame.init()
@@ -11,9 +13,19 @@ screen = pygame.display.set_mode((width, height))
 
 font = pygame.font.SysFont('Arial', 30)
 
+
+# global variables
 buttons = []
 
-my_turn = False
+message = []
+
+my_turn = True
+
+player_number = -1
+player_colour = '#ffffff'
+
+# used for receive_msg_thread
+game_ended = False
 
 
 class Button():
@@ -29,7 +41,7 @@ class Button():
         self.fillColors = {
             'normal': '#ffffff',
             'hover': '#666666',
-            'pressed': '#333333',
+            'pressed': player_colour,
         }
 
         self.buttonSurface = pygame.Surface((self.width, self.height))
@@ -41,8 +53,11 @@ class Button():
 
     def remote_change_colour(self, colour: str):
         self.fillColors['pressed'] = colour
+        self.Pressed = True
 
     def process(self):
+        global my_turn
+
         mousePos = pygame.mouse.get_pos()
 
         if self.Pressed:
@@ -61,6 +76,7 @@ class Button():
                     if not self.Pressed:
                         self.Pressed = True
                         self.onclickFunction(self)
+            my_turn = False
 
         # display
         self.buttonSurface.blit(self.buttonSurf, [
@@ -70,13 +86,69 @@ class Button():
         screen.blit(self.buttonSurface, self.buttonRect)
 
 
-def myFunction(button):
-    print(f'Button {button.id} Pressed')
+def send_msg(button):
+    global conn
+
+    # msg format is like below
+    msg = f"Pressed {player_number} {button.id}"
+    conn.sendall(bytes(msg))
 
 
-customButton = Button(30, 30, 400, 100, 1, 'Button One (one Press only)', myFunction)
-customButton = Button(30, 180, 400, 100, 2, 'Button Two (one Press only)', myFunction)
-customButton = Button(30, 330, 400, 100, 3, 'Button Three (one Press only)', myFunction)
+def process_msg(msg):
+    # tell function to use global variable
+    global player_number
+    global player_colour
+    global game_ended
+    global my_turn
+
+    msg.decode()
+    command = msg.split(" ")
+    if command[0] == "end":
+        game_ended = True
+    elif command[0] == "player#":
+        player_number = int(command[1])
+    elif command[0] == "player_colour":
+        player_colour = command[1]
+    elif command[0] == "player_trun":
+        # sever notify all clients who is the next one to play
+        if player_number == command[1]:
+            my_turn = True
+    elif command[0] == "remote_press":
+        # someone else pressed a button
+        button_id = int(command[1])
+        colour = command[2]
+        buttons[button_id - 1].remote_change_colour(colour)
+    elif command[0] == "display":
+        # change the display message
+        message[0].buttonSurf = font.render(command[1], True, (20, 20, 20))
+
+
+def receive_msg_thread():
+    global conn
+
+    while not game_ended:
+        data = conn.recv(1024)
+        process_msg(data)
+
+
+# customButton = Button(30, 30, 400, 100, 1, 'Button One (one Press only)', send_msg)
+# customButton = Button(30, 180, 400, 100, 2, 'Button Two (one Press only)', send_msg)
+# customButton = Button(30, 330, 400, 100, 3, 'Button Three (one Press only)', send_msg)
+
+
+# main tasks starts
+
+
+# initialize map
+
+
+# connect to server, the variable 'conn' should be a global variable
+
+
+# put the connection into a thread
+t1 = threading.Thread(target=receive_msg_thread)
+# starting thread 1
+t1.start()
 
 # Game loop.
 while True:
@@ -84,9 +156,14 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
+            # wait until thread 1 is completely executed
+            t1.join()
             sys.exit()
 
     for object in buttons:
+        object.process()
+
+    for object in message:
         object.process()
 
     pygame.display.flip()

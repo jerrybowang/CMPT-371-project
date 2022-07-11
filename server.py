@@ -17,7 +17,7 @@ except socket.error as e:
 s.listen(2) 
 print("Waiting for a connection, server started")
 
-# Threaded function.
+# Threaded function
 def threaded_client(conn):
     reply = ""
     while True:

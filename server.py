@@ -41,4 +41,5 @@ while True:
     conn, addr = s.accept()
     print("Connected to: ", addr)
 
+    # starts new thread
     start_new_thread(threaded_client, (conn,))

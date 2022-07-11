@@ -22,7 +22,7 @@ message = []
 my_turn = True
 
 player_number = -1
-player_colour = '#ffffff'
+player_colour = '#333333'
 
 # used for receive_msg_thread
 game_ended = False
@@ -76,7 +76,7 @@ class Button():
                     if not self.Pressed:
                         self.Pressed = True
                         self.onclickFunction(self)
-            my_turn = False
+                        # my_turn = False
 
         # display
         self.buttonSurface.blit(self.buttonSurf, [
@@ -90,8 +90,12 @@ def send_msg(button):
     global conn
 
     # msg format is like below
-    msg = f"Pressed {player_number} {button.id}"
+    msg = f"pressed {player_number} {button.id}"
     conn.sendall(bytes(msg))
+
+
+def send_msg_test(button):
+    print(f"pressed {player_number} {button.id}")
 
 
 def process_msg(msg):
@@ -131,24 +135,27 @@ def receive_msg_thread():
         process_msg(data)
 
 
-# customButton = Button(30, 30, 400, 100, 1, 'Button One (one Press only)', send_msg)
-# customButton = Button(30, 180, 400, 100, 2, 'Button Two (one Press only)', send_msg)
-# customButton = Button(30, 330, 400, 100, 3, 'Button Three (one Press only)', send_msg)
+# for test only
+customButton = Button(30, 30, 400, 100, 1, 'Button One (one Press only)', send_msg_test)
+customButton = Button(30, 180, 400, 100, 2, 'Button Two (one Press only)', send_msg_test)
+customButton = Button(30, 330, 400, 100, 3, 'Button Three (one Press only)', send_msg_test)
 
 
 # main tasks starts
 
 
 # initialize map
+# for testing, please use send_msg_test instead of send_msg
 
 
 # connect to server, the variable 'conn' should be a global variable
 
 
 # put the connection into a thread
-t1 = threading.Thread(target=receive_msg_thread)
+# t1 = threading.Thread(target=receive_msg_thread)
+
 # starting thread 1
-t1.start()
+# t1.start()
 
 # Game loop.
 while True:
@@ -157,7 +164,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             # wait until thread 1 is completely executed
-            t1.join()
+            # t1.join()
             sys.exit()
 
     for object in buttons:

@@ -114,7 +114,7 @@ def process_msg(msg):
     elif command[0] == "player_colour":
         player_colour = command[1]
     elif command[0] == "player_turn":
-        # sever notify all clients who is the next one to play
+        # sever notify all clients who are the next one to play
         if player_number == command[1]:
             my_turn = True
     elif command[0] == "remote_press":

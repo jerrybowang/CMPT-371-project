@@ -113,7 +113,7 @@ def process_msg(msg):
         player_number = int(command[1])
     elif command[0] == "player_colour":
         player_colour = command[1]
-    elif command[0] == "player_trun":
+    elif command[0] == "player_turn":
         # sever notify all clients who is the next one to play
         if player_number == command[1]:
             my_turn = True

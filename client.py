@@ -8,7 +8,7 @@ import socket
 pygame.init()
 fps = 60
 fpsClock = pygame.time.Clock()
-width, height = 640, 480
+width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
 
 font = pygame.font.SysFont('Arial', 30)
@@ -85,7 +85,6 @@ class Button():
         ])
         screen.blit(self.buttonSurface, self.buttonRect)
 
-
 def send_msg(button):
     global conn
 
@@ -93,10 +92,8 @@ def send_msg(button):
     msg = f"pressed {player_number} {button.id}"
     conn.sendall(bytes(msg))
 
-
 def send_msg_test(button):
     print(f"pressed {player_number} {button.id}")
-
 
 def process_msg(msg):
     # tell function to use global variable
@@ -126,36 +123,52 @@ def process_msg(msg):
         # change the display message
         message[0].buttonSurf = font.render(command[1], True, (20, 20, 20))
 
+# connect to server, the variable 'conn' should be a global variable (need to test)
+class Network():
+    def __init__(self):
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.connect(('localhost', 5555))
+        self.client.setblocking(False)
 
-def receive_msg_thread():
-    global conn
+        # start threads
+        self.send_thread = threading.Thread(target=self.send)
+        self.send_thread.start()
 
-    while not game_ended:
-        data = conn.recv(1024)
-        process_msg(data)
+        self.receive_thread = threading.Thread(target=self.receive)
+        self.receive_thread.start()
 
+    # send message to server
+    def send(self):
+        global conn
 
-# for test only
-customButton = Button(30, 30, 400, 100, 1, 'Button One (one Press only)', send_msg_test)
-customButton = Button(30, 180, 400, 100, 2, 'Button Two (one Press only)', send_msg_test)
-customButton = Button(30, 330, 400, 100, 3, 'Button Three (one Press only)', send_msg_test)
+        while True:
+            for button in buttons:
+                if button.Pressed:
+                    # send message to server
+                    send_msg(button)
 
+            fpsClock.tick(fps)
+    
+    # receive message from server
+    def receive(self):
+        global conn
 
-# main tasks starts
+        while True:
+            try:
+                data = conn.recv(1024)
+                # process message
+                process_msg(data)
+            except:
+                pass
+            fpsClock.tick(fps)
 
+# connect to server
+# conn = Network()
 
-# initialize map
-# for testing, please use send_msg_test instead of send_msg
-
-
-# connect to server, the variable 'conn' should be a global variable
-
-
-# put the connection into a thread
-# t1 = threading.Thread(target=receive_msg_thread)
-
-# starting thread 1
-# t1.start()
+# initialize map (16x16)
+for i in range(16):
+    for j in range(16):
+        Button(i * 50, j * 50, 50, 50, i * 16 + j + 1, buttonText=str(i * 16 + j + 1), onclickFunction=send_msg_test)
 
 # Game loop.
 while True:
@@ -175,4 +188,3 @@ while True:
 
     pygame.display.flip()
     fpsClock.tick(fps)
-

@@ -69,5 +69,9 @@ def start():
         print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
 
 
+def populate_bombs():
+    
+    pass
+
 print("Please enter maximum player number for current game")
 start()

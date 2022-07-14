@@ -101,7 +101,8 @@ def send_msg(button):
         return
 
     # msg format is like below
-    msg = f"pressed {player_number} {button.id}"
+    
+    msg = f"{button.id}"
     conn.conn.sendall(bytes(msg, encoding='utf8'))
 
 

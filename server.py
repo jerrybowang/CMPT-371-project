@@ -22,10 +22,6 @@ server.bind(ADDR)  # Binds server to port
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
 
-    player_number = str(player_number)
-    player_number = "player# " + player_number
-    conn.send(player_number.encode((FORMAT)))
-
     connected = True
     while connected:
         msg_len = conn.recv(HEADER).decode(FORMAT)

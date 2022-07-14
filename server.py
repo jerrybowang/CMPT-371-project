@@ -29,10 +29,13 @@ def process_client(conn, addr, player_number):
         if msg_len:
             msg_len = int(msg_len)
             msg = conn.recv(msg_len).decode(FORMAT)
+            print("msg is",  msg)
             if msg == END:
                 connected = False
             if msg == Pressed:
                 press_player = conn.recv(HEADER).decode(FORMAT)
+                press_player = press_player.split(" ")
+                button_id = press_player[2]
             if msg == player_num:
                 player_number = str(player_number)
                 player_number = "player# " + player_number

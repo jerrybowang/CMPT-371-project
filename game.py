@@ -12,27 +12,31 @@ FORMAT = 'utf-8'
 END = "end"
 Pressed = "Pressed"
 
-number_bombs = randint(0, 10)
+number_bombs = randint(0, 16)
 
 
 # We have a players dictionary in the following format
 
-# {Player_id: 0, Player_id: 1}
+# {1: True, 2: False}
 # True: means player is still alive
 # False: means player is died
 
+# Connections
 
+# {1: conn, 2: conn }
 
 class Game:
     def __init__(self):
         self.board = None
         self.row = 16
         self.column = 16
-        self.winner = -1
+        self.bomb_list = []
         self.bombs_positions = set()
         # List of ids of the players that have been connected to the game
         self.player_ids = dict()
         self.colors = set()
+        
+        #self.connections = dict() If we need it
 
 
     def init_board_game(self):
@@ -87,8 +91,31 @@ class Game:
         if self.player_ids[id] == False:
             end_message = "end"
             conn.send(end_message.encode((FORMAT)))
-            
-        return False
+
+        return False # Failure
+
+    def send_player_won(self, id, conn):
+        # number_of_trues = 0
+        # for key, value in self.player_ids.items():
+            #if value == true
+                #number_of_trues+=1
+
+         if self.player_ids[id] == True:
+            winning_message = "you_won"
+            conn.send(winning_message.encode((FORMAT)))
+
+
+
+    def player_turn(self):
+        player_id = random.randint(1, len(self.player_ids)) # Generate a random number from 1 to how many players we have in dictionary
+        return player_id
+
+
+    # def bombs(self):
+    #     for i in range(1,number_bombs): # choose number_bombs random numbers to be bombs
+    #         n = random.randint(1,256) # total of 256 numbers
+    #         self.bomb_list.append(number_bombs)
+      
 
     def handle_different_messages():
 
@@ -98,14 +125,3 @@ class Game:
 
     def game_lost(self):
         pass
-
-    def get_player_move(self, p):
-        pass
-
-    
-    # Whoes turn is to play
-    def play(self, player, move):
-        pass
-
-    def connected(self):
-        return self.ready

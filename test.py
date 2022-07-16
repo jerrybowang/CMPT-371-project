@@ -33,3 +33,8 @@ dictionary[5] = True
 
 print(dictionary)
 
+for key, value in dictionary.items():
+    print(key)
+    print(value)
+
+

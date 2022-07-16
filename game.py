@@ -135,7 +135,7 @@ class Game:
 
         if msg[0] == remote:
             message = "remote_press " + msg[2] + " " + self.rgb_to_hex(self.colors[player_number-1])
-            
+
             for index in len(self.connections):
                  if index != 0:
                      self.connections[index][0].send(message.encode((FORMAT)))
@@ -151,7 +151,7 @@ class Game:
             id_player = self.player_turn()
             message_turn = "player_turn " + str(id_player)
             conn.send(message_turn.encode((FORMAT)))
-
+            
         if msg == player_num:
             player_number = str(player_number)
             player_number = "player# " + player_number

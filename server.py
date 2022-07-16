@@ -34,12 +34,11 @@ def process_client(conn, addr, player_number):
 
     connected = True
     while connected:
-        
-        my_game.handle_messages("player#")
+
+        my_game.handle_messages("player#", conn, addr, player_number)
         my_game.generate_color_player()
-        my_game.handle_messages("player_colour")
+        my_game.handle_messages("player_colour", conn, addr, player_number)
         
-        #msg_len = conn.recv(HEADER).decode(FORMAT)
         data = conn.recv(HEADER)
         msg = data.decode(FORMAT)
 
@@ -48,6 +47,17 @@ def process_client(conn, addr, player_number):
             if msg[0] == Pressed:
                 msg[0] = "remote_press"
                 my_game.handle_messages(msg, conn, addr, player_number)
+
+            # CASE: when the player has died
+            # if check_player_died():
+            #   my_game.handle_messages("end", conn, addr, player_number)
+            #   connected = False
+            
+            # CASE: when the player has won
+            # if check_player_won():
+            #   my_game.handle_messages("display", conn, addr, player_number)
+            #   connected = False
+
 
     conn.close()
 

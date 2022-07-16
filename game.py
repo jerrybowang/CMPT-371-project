@@ -2,6 +2,7 @@
 from random import seed
 from random import randint
 import random
+import re
 # seed random number generator
 seed(1)
 
@@ -11,6 +12,12 @@ PORT = 5555
 FORMAT = 'utf-8'
 END = "end"
 Pressed = "Pressed"
+player_num = "player#"
+IP_and_Port = "IPandPort"
+player_color = "player_colour"
+player_turn = "player_turn"
+display = "display"
+remote = "remote_press"
 
 number_bombs = randint(0, 16)
 
@@ -32,6 +39,7 @@ class Game:
         self.column = 16
         self.bomb_list = []
         self.bombs_positions = set()
+        self.connections = []
         # List of ids of the players that have been connected to the game
         self.player_ids = dict()
         self.colors = set()
@@ -82,9 +90,7 @@ class Game:
         self.player_ids[id] = True 
 
     def generate_color_player(self):
-        rgb_color = self.generate_random_rgb()
-        hex = self.rgb_to_hex(rgb_color)
-        return hex
+        self.generate_random_rgb()
 
     def send_player_died(self, id, conn):
         # Make sure player is dead
@@ -101,23 +107,57 @@ class Game:
                 #number_of_trues+=1
 
          if self.player_ids[id] == True:
-            winning_message = "you_won"
+            winning_message = 'display "You Won"'
             conn.send(winning_message.encode((FORMAT)))
 
 
+    def add_connections(self, conn, add):
+        self.connections.append(conn, add)
 
     def player_turn(self):
         player_id = random.randint(1, len(self.player_ids)) # Generate a random number from 1 to how many players we have in dictionary
         return player_id
 
-
+    def read_message(msg):
+        msg = msg.split(",")
+        return msg
+    
     # def bombs(self):
     #     for i in range(1,number_bombs): # choose number_bombs random numbers to be bombs
     #         n = random.randint(1,256) # total of 256 numbers
     #         self.bomb_list.append(number_bombs)
       
+    
+    # Pressed Button needs to be added
+    def handle_messages(self, msg, conn, addr, player_number):
+        if msg == END:
+            self.send_player_died(player_number, conn)
+        if msg[0] == remote:
+            message = "remote_press " + msg[1] + " " + self.rgb_to_hex(self.colors[player_number-1])
+            for index in len(self.connections):
+                 if index != 0:
+                     self.connections[index][0].send(message.encode((FORMAT)))
+        if msg == display:
+            self.send_player_won(player_number, conn)
+        if msg == player_color:
+            message_color = "player_color" + self.rgb_to_hex(self.colors[player_number-1])
+            conn.send(message_color.encode((FORMAT)))
 
-    def handle_different_messages():
+        if msg == player_turn:
+            id_player = self.player_turn()
+            message_turn = "player_turn " + str(id_player)
+            conn.send(message_turn.encode((FORMAT)))
+
+        if msg == player_num:
+            player_number = str(player_number)
+            player_number = "player# " + player_number
+            conn.send(player_number.encode((FORMAT)))
+        if msg == IP_and_Port:
+            address = (str(addr))
+            address = "IP and port is: " + address
+            conn.send(address.encode((FORMAT)))
+
+
 
 
     def game_won(self):

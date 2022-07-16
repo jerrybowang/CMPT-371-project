@@ -22,7 +22,9 @@ def send(msg):
     print(client.recv(HEADER).decode(FORMAT))
 
 
-send("IPandPort")
+#send("IPandPort")
+print(client.recv(HEADER).decode(FORMAT))
 input()
+print(client.recv(HEADER).decode(FORMAT))
 send("Pressed")
 send("player#")

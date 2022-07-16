@@ -23,8 +23,10 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP connection
 server.bind(ADDR)  # Binds server to port
 
 
-
-
+connections = []
+# Global variable
+my_game = Game()
+my_game.init_board_game()
 
 
 def process_client(conn, addr, player_number):
@@ -32,6 +34,14 @@ def process_client(conn, addr, player_number):
 
     connected = True
     while connected:
+        # my_message = "hello"
+        # for index in range(player_number):
+        #     if index != 0:
+        #         connections[index][0].send(my_message.encode((FORMAT)))
+        my_game.handle_messages("player#")
+        my_game.generate_color_player()
+        my_game.handle_messages("player_colour")
+        
         msg_len = conn.recv(HEADER).decode(FORMAT)
 
         if msg_len:
@@ -40,7 +50,8 @@ def process_client(conn, addr, player_number):
             if msg == END:
                 connected = False
             if msg == Pressed:
-                press_player = conn.recv(HEADER).decode(FORMAT)
+               press_player = conn.recv(HEADER).decode(FORMAT) 
+
             if msg == player_num:
                 player_number = str(player_number)
                 player_number = "player# " + player_number
@@ -56,10 +67,8 @@ def process_client(conn, addr, player_number):
 
 def start():
     player_number = 0
-    connections = []
     
-    my_game = Game()
-    my_game.init_board_game()
+    
 
     max_connections = int(input("Enter a number: "))
     server.listen()
@@ -72,7 +81,8 @@ def start():
             conn.sendall(
                 f"Connection overflow. Max amount is {max_connections}".encode())
             continue
-        connections.append((conn, addr))
+        my_game.add_connections(conn, addr)
+
         player_number += 1
         my_game.add_player(player_number)
         # Threaded function

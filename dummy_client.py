@@ -24,4 +24,5 @@ def send(msg):
 
 send("IPandPort")
 input()
+send("Pressed")
 send("player#")

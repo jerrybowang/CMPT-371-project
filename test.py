@@ -16,3 +16,20 @@ def generate_random_rgb():
 
 generate_random_rgb()
 
+
+my_list = []
+
+my_list.append(1)
+
+print(my_list)
+
+dictionary = dict()
+
+dictionary[1] = False
+dictionary[2] = True
+dictionary[3] = True
+dictionary[4] = False
+dictionary[5] = True
+
+print(dictionary)
+

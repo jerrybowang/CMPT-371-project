@@ -57,6 +57,10 @@ def process_client(conn, addr, player_number):
 def start():
     player_number = 0
     connections = []
+    
+    my_game = Game()
+    my_game.init_board_game()
+
     max_connections = int(input("Enter a number: "))
     server.listen()
 
@@ -70,6 +74,7 @@ def start():
             continue
         connections.append((conn, addr))
         player_number += 1
+        my_game.add_player(player_number)
         # Threaded function
         thread = threading.Thread(
             target=process_client, args=(conn, addr, player_number))

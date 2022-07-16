@@ -42,26 +42,32 @@ def process_client(conn, addr, player_number):
 
 
     while connected:
+        if my_game.player_id_turn == player_number:
         
-        data = conn.recv(HEADER)
-        msg = data.decode(FORMAT)
+            data = conn.recv(HEADER)
+            msg = data.decode(FORMAT)
 
-        if data:
-            msg = msg.split(" ")
-            if msg[0] == Pressed:
-                msg[0] = "remote_press"
-                my_game.handle_messages(msg, conn, addr, player_number)
+            if data:
+                msg = msg.split(" ")
+                if msg[0] == Pressed:
+                    msg[0] = "remote_press"
+                    my_game.handle_messages(msg, conn, addr, player_number)
 
-            # CASE: when the player has died
-            # if check_player_died():
-            #   my_game.handle_messages("end", conn, addr, player_number)
-            #   connected = False
+                # CASE: when the player has died
+                # if check_player_died():
+                #   my_game.handle_messages("end", conn, addr, player_number)
+                #   connected = False
 
-            # CASE: when the player has won
-            # if check_player_won():
-            #   my_game.handle_messages("display", conn, addr, player_number)
-            #   connected = False
+                # CASE: when the player has won
+                # if check_player_won():
+                #   my_game.handle_messages("display", conn, addr, player_number)
+                #   connected = False
 
+                # Give chance to the next player
+            my_game.player_turn()
+
+        else:
+            continue
 
     conn.close()
 
@@ -72,6 +78,9 @@ def start():
     
 
     max_connections = int(input("Enter a number: "))
+    my_game.set_max_connections(max_connections)
+    # Determine whose turn is it
+    my_game.player_turn()
     server.listen()
 
     print(f"[LISTENING] Server is listing on {SERVER}")
@@ -82,18 +91,18 @@ def start():
             conn.sendall(
                 f"Connection overflow. Max amount is {max_connections}".encode())
             continue
+        
         my_game.add_connections(conn, addr)
 
         player_number += 1
         my_game.add_player(player_number)
         # Threaded function
-        if len(connections) == max_connections:
-            my_game.player_turn()
-            thread = threading.Thread(
-                target=process_client, args=(connections[my_game.player_id_turn-1], addr, my_game.player_id_turn))    
-            thread.start()
-        else:
-            print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
+            
+        thread = threading.Thread(
+            target=process_client, args=(conn, addr, player_number))    
+        thread.start()
+        
+        print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
 
 
 print("Please enter maximum player number for current game")

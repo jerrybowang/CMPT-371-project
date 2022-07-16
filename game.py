@@ -43,6 +43,7 @@ class Game:
         # List of ids of the players that have been connected to the game
         self.player_ids = dict()
         self.colors = set()
+        self.max_connections = None
         self.player_id_turn = None
         #self.connections = dict() If we need it
 
@@ -64,7 +65,9 @@ class Game:
         
             return 1
 
-            
+    def set_max_connections(self, max_connection):
+        self.max_connections = max_connection
+
     def generate_random_rgb(self):
         generated = False
         generated_rgb = None
@@ -115,7 +118,7 @@ class Game:
         self.connections.append(conn, add)
 
     def player_turn(self):
-        player_id = random.randint(1, len(self.player_ids)) # Generate a random number from 1 to how many players we have in dictionary
+        player_id = random.randint(1, self.max_connections) # Generate a random number from 1 to how many players we have in dictionary
         self.player_id_turn = player_id
 
     def read_message(msg):

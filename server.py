@@ -15,7 +15,7 @@ SERVER = socket.gethostbyname(socket.gethostname())  # get local host IP
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 END = "end"
-Pressed = "Pressed"
+Pressed = "pressed"
 player_num = "player#"
 IP_and_Port = "IPandPort"
 
@@ -34,33 +34,20 @@ def process_client(conn, addr, player_number):
 
     connected = True
     while connected:
-        # my_message = "hello"
-        # for index in range(player_number):
-        #     if index != 0:
-        #         connections[index][0].send(my_message.encode((FORMAT)))
+        
         my_game.handle_messages("player#")
         my_game.generate_color_player()
         my_game.handle_messages("player_colour")
         
-        msg_len = conn.recv(HEADER).decode(FORMAT)
+        #msg_len = conn.recv(HEADER).decode(FORMAT)
+        data = conn.recv(HEADER)
+        msg = data.decode(FORMAT)
 
-        if msg_len:
-            msg_len = int(msg_len)
-            msg = conn.recv(msg_len).decode(FORMAT)
-            if msg == END:
-                connected = False
-            if msg == Pressed:
-               press_player = conn.recv(HEADER).decode(FORMAT) 
-
-            if msg == player_num:
-                player_number = str(player_number)
-                player_number = "player# " + player_number
-                conn.send(player_number.encode((FORMAT)))
-            if msg == IP_and_Port:
-                address = (str(addr))
-                address = "IP and port is: " + address
-                print(f"[{addr}] {msg}")
-                conn.send(address.encode((FORMAT)))
+        if data:
+            msg = msg.split(" ")
+            if msg[0] == Pressed:
+                msg[0] = "remote_press"
+                my_game.handle_messages(msg, conn, addr, player_number)
 
     conn.close()
 

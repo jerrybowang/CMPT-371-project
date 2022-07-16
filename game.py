@@ -132,13 +132,17 @@ class Game:
     def handle_messages(self, msg, conn, addr, player_number):
         if msg == END:
             self.send_player_died(player_number, conn)
+
         if msg[0] == remote:
-            message = "remote_press " + msg[1] + " " + self.rgb_to_hex(self.colors[player_number-1])
+            message = "remote_press " + msg[2] + " " + self.rgb_to_hex(self.colors[player_number-1])
+            
             for index in len(self.connections):
                  if index != 0:
                      self.connections[index][0].send(message.encode((FORMAT)))
+
         if msg == display:
             self.send_player_won(player_number, conn)
+
         if msg == player_color:
             message_color = "player_color" + self.rgb_to_hex(self.colors[player_number-1])
             conn.send(message_color.encode((FORMAT)))
@@ -152,6 +156,7 @@ class Game:
             player_number = str(player_number)
             player_number = "player# " + player_number
             conn.send(player_number.encode((FORMAT)))
+
         if msg == IP_and_Port:
             address = (str(addr))
             address = "IP and port is: " + address

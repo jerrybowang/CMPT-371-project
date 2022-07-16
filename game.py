@@ -43,7 +43,7 @@ class Game:
         # List of ids of the players that have been connected to the game
         self.player_ids = dict()
         self.colors = set()
-        
+        self.player_id_turn = None
         #self.connections = dict() If we need it
 
 
@@ -116,7 +116,7 @@ class Game:
 
     def player_turn(self):
         player_id = random.randint(1, len(self.player_ids)) # Generate a random number from 1 to how many players we have in dictionary
-        return player_id
+        self.player_id_turn = player_id
 
     def read_message(msg):
         msg = msg.split(",")
@@ -151,7 +151,7 @@ class Game:
             id_player = self.player_turn()
             message_turn = "player_turn " + str(id_player)
             conn.send(message_turn.encode((FORMAT)))
-            
+
         if msg == player_num:
             player_number = str(player_number)
             player_number = "player# " + player_number

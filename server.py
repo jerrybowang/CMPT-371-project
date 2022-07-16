@@ -39,7 +39,8 @@ def process_client(conn, addr, player_number):
     my_game.handle_messages("player#", conn, addr, player_number)
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
-    
+
+
     while connected:
         
         data = conn.recv(HEADER)
@@ -86,10 +87,13 @@ def start():
         player_number += 1
         my_game.add_player(player_number)
         # Threaded function
-        thread = threading.Thread(
-            target=process_client, args=(conn, addr, player_number))
-        thread.start()
-        print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
+        if len(connections) == max_connections:
+            my_game.player_turn()
+            thread = threading.Thread(
+                target=process_client, args=(connections[my_game.player_id_turn-1], addr, my_game.player_id_turn))    
+            thread.start()
+        else:
+            print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
 
 
 print("Please enter maximum player number for current game")

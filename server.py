@@ -29,15 +29,18 @@ my_game = Game()
 my_game.init_board_game()
 
 
+
+
+
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
 
     connected = True
+    my_game.handle_messages("player#", conn, addr, player_number)
+    my_game.generate_color_player()
+    my_game.handle_messages("player_colour", conn, addr, player_number)
+    
     while connected:
-
-        my_game.handle_messages("player#", conn, addr, player_number)
-        my_game.generate_color_player()
-        my_game.handle_messages("player_colour", conn, addr, player_number)
         
         data = conn.recv(HEADER)
         msg = data.decode(FORMAT)
@@ -52,7 +55,7 @@ def process_client(conn, addr, player_number):
             # if check_player_died():
             #   my_game.handle_messages("end", conn, addr, player_number)
             #   connected = False
-            
+
             # CASE: when the player has won
             # if check_player_won():
             #   my_game.handle_messages("display", conn, addr, player_number)

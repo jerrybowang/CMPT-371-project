@@ -8,7 +8,7 @@ import socket
 pygame.init()
 fps = 60
 fpsClock = pygame.time.Clock()
-width, height = 800, 800
+width, height = 1200, 800
 screen = pygame.display.set_mode((width, height))
 
 font = pygame.font.SysFont('Arial', 30)
@@ -93,6 +93,50 @@ class Button():
         screen.blit(self.buttonSurface, self.buttonRect)
 
 
+class MsgBox():
+    def __init__(self, x, y, width, height, buttonText='Button'):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.Pressed = False
+        self.other_player = False
+        self.msg = buttonText
+        self.text_colour = (20, 20, 20)
+
+        self.fillColors = {
+            'normal': '#ffffff',
+        }
+
+        self.buttonSurface = pygame.Surface((self.width, self.height))
+        self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+        self.buttonSurf = font.render(self.msg, True, self.text_colour)
+
+        message.append(self)
+
+    def change_msg(self, msg: str):
+        self.msg = msg
+
+    def change_txt_colour(self, colour: str):
+        h = colour.lstrip('#')
+        self.text_colour = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+    def process(self):
+        global my_turn
+        global game_ended
+        global player_colour
+
+        self.buttonSurface.fill(self.fillColors['normal'])
+        self.buttonSurf = font.render(self.msg, True, self.text_colour)
+
+        # display
+        self.buttonSurface.blit(self.buttonSurf, [
+            self.buttonRect.width / 2 - self.buttonSurf.get_rect().width / 2,
+            self.buttonRect.height / 2 - self.buttonSurf.get_rect().height / 2
+        ])
+        screen.blit(self.buttonSurface, self.buttonRect)
+
 def send_msg(button):
     global conn
     global game_ended
@@ -115,6 +159,7 @@ def process_msg(msg):
     global player_colour
     global game_ended
     global my_turn
+    global message
 
     d_msg = msg.decode()
     command = d_msg.split(" ")
@@ -122,14 +167,18 @@ def process_msg(msg):
         game_ended = True
     elif command[0] == "player#":
         player_number = int(command[1])
+        message[0].change_msg(f"You are P{player_number}")
     elif command[0] == "player_colour":
         player_colour = command[1]
+        message[0].change_txt_colour(player_colour)
     elif command[0] == "player_turn":
         # sever notify all clients who are the next one to play
         if player_number == int(command[1]):
             my_turn = True
+            message[1].change_msg(f"Your turn")
         else:
             my_turn = False
+            message[1].change_msg(f"Wait for P{command[1]}")
     elif command[0] == "remote_press":
         # someone else pressed a button
         button_id = int(command[1])
@@ -137,7 +186,8 @@ def process_msg(msg):
         buttons[button_id - 1].remote_change_colour(colour)
     elif command[0] == "display":
         # change the display message
-        message[0].buttonSurf = font.render(command[1], True, (20, 20, 20))
+        msg = " ".join(command[1:])
+        message[2].change_msg(msg)
 
 
 # connect to server, the variable 'conn' should be a global variable (need to test)
@@ -196,6 +246,14 @@ conn = Network()
 for i in range(16):
     for j in range(16):
         Button(i * 50, j * 50, 50, 50, i * 16 + j + 1, buttonText=str(i * 16 + j + 1), onclickFunction=send_msg)
+
+# initialize msg box
+# player number
+MsgBox(850, 50, 300, 100, "Please wait")
+# notification
+MsgBox(850, 200, 300, 100, "Please wait")
+# msg box
+MsgBox(850, 350, 300, 150, "")
 
 # Game loop.
 while True:

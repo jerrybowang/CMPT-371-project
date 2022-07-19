@@ -63,7 +63,7 @@ def process_client(conn, addr, player_number):
                 #   my_game.handle_messages("display", conn, addr, player_number)
                 #   connected = False
 
-                # Give chance to the next player
+            # Give chance to the next player
             my_game.player_turn()
 
         else:
@@ -91,7 +91,7 @@ def start():
             conn.sendall(
                 f"Connection overflow. Max amount is {max_connections}".encode())
             continue
-        
+
         my_game.add_connections(conn, addr)
 
         player_number += 1

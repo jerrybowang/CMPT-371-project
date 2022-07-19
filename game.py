@@ -165,9 +165,6 @@ class Game:
             address = "IP and port is: " + address
             conn.send(address.encode((FORMAT)))
 
-
-
-
     def game_won(self):
         pass
 

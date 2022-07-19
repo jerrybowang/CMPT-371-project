@@ -11,7 +11,7 @@ SERVER = socket.gethostbyname(socket.gethostname()) # get local host IP
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 END = "end"
-Pressed = "Pressed"
+Pressed = "pressed"
 player_num = "player#"
 IP_and_Port = "IPandPort"
 
@@ -29,18 +29,23 @@ def process_client(conn, addr, player_number):
         if msg_len:
             msg_len = int(msg_len)
             msg = conn.recv(msg_len).decode(FORMAT)
+            command = msg.split()
             print("msg is",  msg)
-            if msg == END:
+            if command[0] == END:
+                # if player wants to end the game
                 connected = False
-            if msg == Pressed:
-                press_player = conn.recv(HEADER).decode(FORMAT)
-                press_player = press_player.split(" ")
-                button_id = press_player[2]
-            if msg == player_num:
+            if command[0] == Pressed:
+                player_id = command[1]
+                button_id = command[2]
+                # for testing
+                # two_ids = player_id + " " + button_id
+                # print("two_ids is ", two_ids)
+                # conn.send(two_ids.encode((FORMAT)))
+            if command[0] == player_num:
                 player_number = str(player_number)
                 player_number = "player# " + player_number
                 conn.send(player_number.encode((FORMAT)))
-            if msg == IP_and_Port:
+            if command[0] == IP_and_Port:
                 address = (str(addr))
                 address = "IP and port is: " + address
                 print(f"[{addr}] {msg}")

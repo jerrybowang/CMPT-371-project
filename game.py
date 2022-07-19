@@ -164,6 +164,7 @@ class Game:
         if msg == IP_and_Port:
             address = (str(addr))
             address = "IP and port is: " + address
+            print(f"[{addr}] {msg}")
             conn.send(address.encode((FORMAT)))
 
     def game_won(self):

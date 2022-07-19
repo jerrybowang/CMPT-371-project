@@ -23,6 +23,7 @@ server.bind(ADDR)  # Binds server to port
 my_game = Game()
 my_game.init_board_game()
 
+
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
 

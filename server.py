@@ -105,7 +105,7 @@ def start():
     while True:
         conn, addr = server.accept()
         # the maximum player
-        if len(connections) >= max_connections:
+        if len(my_game.connections) >= max_connections:
             conn.sendall(
                 f"Connection overflow. Max amount is {max_connections}".encode())
             continue

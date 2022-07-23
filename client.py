@@ -4,6 +4,16 @@ import pygame
 import threading
 import socket
 
+# specify network ip and port here
+ip = "localhost"
+port = 0
+
+# user input for server ip and port
+if ip == 'localhost':
+    ip = input("Enter IP: ")
+if port == 0:
+    port = int(input("Enter port: "))
+
 # Configuration
 pygame.init()
 fps = 60
@@ -25,7 +35,6 @@ player_colour = '#333333'
 
 # used for receive_msg_thread
 game_ended = False
-
 
 class Button():
     def __init__(self, x, y, width, height, id, buttonText='Button', onclickFunction=None):
@@ -194,7 +203,9 @@ def process_msg(msg):
 class Network():
     def __init__(self):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn.connect(('localhost', 5555))
+        # get ip from user
+        
+        self.conn.connect((ip, port))
 
         # we do need receive function to be a blocking call
         # self.conn.setblocking(False)
@@ -238,9 +249,8 @@ class Network():
         self.conn.close()
 
 
-# connect to server
-# we also need to have argument (IP and port) for Network() in the future
 conn = Network()
+
 
 # initialize map (16x16)
 for i in range(16):

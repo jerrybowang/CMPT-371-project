@@ -28,7 +28,7 @@ buttons = []
 
 message = []
 
-my_turn = True
+my_turn = False
 
 player_number = -1
 player_colour = '#333333'
@@ -92,7 +92,7 @@ class Button():
                     if not self.Pressed:
                         self.Pressed = True
                         self.onclickFunction(self)
-                        # my_turn = False
+                        my_turn = False
 
         # display
         self.buttonSurface.blit(self.buttonSurf, [
@@ -187,7 +187,7 @@ def process_msg(msg):
             message[1].change_msg(f"Your turn")
         else:
             my_turn = False
-            message[1].change_msg(f"Wait for P{command[1]}")
+            message[1].change_msg(f"Please wait for P{command[1]}")
     elif command[0] == "remote_press":
         # someone else pressed a button
         button_id = int(command[1])

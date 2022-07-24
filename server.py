@@ -9,7 +9,8 @@ import random
 
 HEADER = 2048
 PORT = 5555 # port number
-SERVER = socket.gethostbyname(socket.gethostname()) # get local host IP
+host_name = socket.gethostname()
+SERVER = socket.gethostbyname(host_name + ".local") # get local host IP
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 Pressed = "pressed"

@@ -143,7 +143,7 @@ class Game:
             self.send_player_won()
 
         if msg == player_color:
-            message_color = "player_color " + \
+            message_color = "player_colour " + \
                 self.hex_colors[player_number-1]
             print(self.hex_colors[player_number-1])
             conn.sendall(message_color.encode((FORMAT)))

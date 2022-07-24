@@ -23,6 +23,8 @@ server.bind(ADDR)  # Binds server to port
 my_game = Game()
 my_game.init_board_game()
 
+threads = []
+
 
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -32,7 +34,6 @@ def process_client(conn, addr, player_number):
     my_game.handle_messages("player#", conn, addr, player_number)
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
-    my_game.handle_messages("player_turn", conn, addr, player_number)
     print("Player turn: " + str(my_game.player_id_turn))
 
     while connected:
@@ -86,6 +87,7 @@ def process_client(conn, addr, player_number):
 
             # Give chance to the next player
             my_game.player_turn()
+            my_game.handle_messages("player_turn", conn, addr, player_number)
 
         else:
             continue
@@ -93,6 +95,9 @@ def process_client(conn, addr, player_number):
     conn.close()
 
 
+def wait_clients_finish():
+    for index in range(len(threads)):
+        threads[index].join()
 
 def start():
     player_number = 0
@@ -102,9 +107,10 @@ def start():
     # Determine whose turn is it
     my_game.player_turn()
     server.listen()
+    run = True
 
     print(f"[LISTENING] Server is listing on {SERVER}")
-    while True:
+    while run:
         conn, addr = server.accept()
         # the maximum player
         if len(my_game.connections) >= max_connections:
@@ -121,8 +127,12 @@ def start():
         thread = threading.Thread(
             target=process_client, args=(conn, addr, player_number))
         thread.start()
-
+        threads.append(thread)
         print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
+        if len(my_game.connections) == max_connections:
+            my_game.handle_messages("player_turn", conn, addr, player_number)
+            wait_clients_finish()
+            run = False
 
 
 print("Please enter maximum player number for current game")

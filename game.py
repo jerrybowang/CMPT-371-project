@@ -155,7 +155,8 @@ class Game:
 
         if msg == player_turn:
             message_turn = "player_turn " + str(self.player_id_turn)
-            conn.sendall(message_turn.encode((FORMAT)))
+            for index in range(len(self.connections)):
+                self.connections[index][0].send(message_turn.encode((FORMAT)))      
 
         if msg == player_num:
             player_number = str(player_number)

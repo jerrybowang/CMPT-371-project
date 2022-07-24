@@ -12,24 +12,16 @@ PORT = 5555 # port number
 SERVER = socket.gethostbyname(socket.gethostname()) # get local host IP
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
-END = "end"
 Pressed = "pressed"
-player_num = "player#"
-IP_and_Port = "IPandPort"
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP connection
 server.bind(ADDR)  # Binds server to port
 
 # Global variable
 my_game = Game()
-my_game.init_board_game()
 
 threads = []
 
-bomb_list = []
-for i in range(1,16): # choose 16 random numbers to be bombs
-    n = random.randint(1, 256)
-    bomb_list.append(n)
 
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -42,8 +34,9 @@ def process_client(conn, addr, player_number):
     print("Player turn: " + str(my_game.player_id_turn))
 
     while connected:
-
-        if my_game.player_id_turn == player_number:
+        if my_game.game_done == True:
+            break
+        if my_game.player_id_turn == player_number and len(my_game.connections) == my_game.max_connections:
 
             data = conn.recv(HEADER)
             msg = data.decode(FORMAT)
@@ -57,39 +50,41 @@ def process_client(conn, addr, player_number):
             
 
                     # CASE: when the player has died
-                    if check_player_died(button_number):
-                    #   my_game.handle_messages("end", conn, addr, player_number)
-                        connected = False
+                    if my_game.check_player_died(button_number, player_number):
+                       my_game.handle_messages("end", conn, addr, player_number)
+                       print("Died message sent!")
+                       connected = False
 
                     # CASE: when the player has won
-                    if check_player_won():
-                    #   my_game.handle_messages("display", conn, addr, player_number)
-                        print(f"Player {msg[1]} is winner")
-                        connected = False
+                    if my_game.check_player_won():
+                       my_game.handle_messages("display", conn, addr, player_number)
+                       # print(f"Player {msg[1]} is winner")
+                       connected = False
 
               
             # Give chance to the next player
-            my_game.player_turn()
-            my_game.handle_messages("player_turn", conn, addr, player_number)
+            if my_game.check_player_won() == False:
+                my_game.player_turn()
+                my_game.handle_messages("player_turn", conn, addr, player_number)
 
         else:
             continue
 
     conn.close()
 
-def check_player_died(button_number):
-    if button_number in bomb_list:
-        print("PLAYER DIED")
-        player_num -= 1
-        return True
-    else:
-        return False
+# def check_player_died(button_number):
+#     if button_number in bomb_list:
+#         print("PLAYER DIED")
+#         number_player_alive -= 1
+#         return True
+#     else:
+#         return False
 
-def check_player_won():
-    if player_num <= 1:
-        return True
-    else:
-        return False
+# def check_player_won():
+#     if number_player_alive <= 1:
+#         return True
+#     else:
+#         return False
 
 def wait_clients_finish():
     for index in range(len(threads)):
@@ -100,6 +95,8 @@ def start():
 
     max_connections = int(input("Enter a number: "))
     my_game.set_max_connections(max_connections)
+    my_game.init_board_game()
+    
     # Determine whose turn is it
     my_game.player_turn()
     server.listen()
@@ -117,7 +114,7 @@ def start():
         my_game.add_connections(conn, addr)
 
         player_number += 1
-        my_game.add_player(player_number)
+
         # Threaded function
 
         thread = threading.Thread(

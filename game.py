@@ -54,14 +54,14 @@ class Game:
         while len(self.bombs_positions) < number_bombs:
             # Implementation details
 
-            # random_row = random.randrange(0,self.row)
-            # random_column = random.randrange(0,cols)
-            # pos = random_row, random_column
-
-            # if pos in self.bombs_positions:
-            #     continue
-            # self.bombs_positions.add(pos)
-            # self.board[random_row][random_column] = 1
+            random_row = random.randrange(0,self.row)
+            random_column = random.randrange(0,cols)
+            pos = random_row, random_column
+            if pos in self.bombs_positions:
+                 continue
+                
+            self.bombs_positions.add(pos)
+            self.board[random_row][random_column] = 1
 
             return 1
 

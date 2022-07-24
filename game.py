@@ -83,12 +83,13 @@ class Game:
 
             self.colors.add(rgb_v)
             self.hex_colors.append(self.rgb_to_hex(r,g,b))
+            print("RGB" + str(r) + str(g) + str(b))
             generated = True
 
-        
+    
 
     def rgb_to_hex(self, r, g, b):
-        return ('#{:X}{:X}{:X}').format(r, g, b)
+        return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
     def generate_color_player(self):
         self.generate_random_rgb()

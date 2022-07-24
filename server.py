@@ -32,6 +32,8 @@ def process_client(conn, addr, player_number):
     my_game.handle_messages("player#", conn, addr, player_number)
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
+    my_game.handle_messages("player_turn", conn, addr, player_number)
+    print("Player turn: " + str(my_game.player_id_turn))
 
     while connected:
         # msg_len = conn.recv(HEADER).decode(FORMAT)

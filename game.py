@@ -151,17 +151,16 @@ class Game:
         if msg == player_color:
             message_color = "player_color" + \
                 self.hex_colors[player_number-1]
-            conn.send(message_color.encode((FORMAT)))
+            conn.sendall(message_color.encode((FORMAT)))
 
         if msg == player_turn:
-            id_player = self.player_turn()
-            message_turn = "player_turn " + str(id_player)
-            conn.send(message_turn.encode((FORMAT)))
+            message_turn = "player_turn " + str(self.player_id_turn)
+            conn.sendall(message_turn.encode((FORMAT)))
 
         if msg == player_num:
             player_number = str(player_number)
             player_number = "player# " + player_number
-            conn.send(player_number.encode((FORMAT)))
+            conn.sendall(player_number.encode((FORMAT)))
 
         if msg == IP_and_Port:
             address = (str(addr))

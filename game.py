@@ -82,13 +82,13 @@ class Game:
 
             self.colors.add(rgb_v)
             generated_rgb = rgb_v
-            self.hex_colors.append(self.rgb_to_hex(generated_rgb))
+            self.hex_colors.append(self.rgb_to_hex(r,g,b))
             generated = True
 
         
 
-    def rgb_to_hex(self, rgb):
-        return '#%02x%02x%02x'  # hex
+    def rgb_to_hex(self, r, g, b):
+        return ('#{:X}{:X}{:X}').format(r, g, b)
 
     def add_player(self, id):
         self.player_ids[id] = True
@@ -141,16 +141,16 @@ class Game:
             message = "remote_press " + \
                 msg[2] + " " + self.hex_colors[player_number-1]
 
-            for index in len(self.connections):
-                if index != 0:
-                    self.connections[index][0].send(message.encode((FORMAT)))
+            for index in range(len(self.connections)):
+                self.connections[index][0].send(message.encode((FORMAT)))
 
         if msg == display:
             self.send_player_won(player_number, conn)
 
         if msg == player_color:
-            message_color = "player_color" + \
+            message_color = "player_color " + \
                 self.hex_colors[player_number-1]
+            print(self.hex_colors[player_number-1])
             conn.sendall(message_color.encode((FORMAT)))
 
         if msg == player_turn:

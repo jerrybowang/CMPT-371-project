@@ -90,11 +90,10 @@ def process_client(conn, addr, player_number):
                     # CASE: when the player has won
                     if check_player_won():
                     #   my_game.handle_messages("display", conn, addr, player_number)
+                        print(f"Player {msg[1]} is winner")
                         connected = False
 
-                # if check_player_won():
-                #   connected = False
-
+              
             # Give chance to the next player
             my_game.player_turn()
             my_game.handle_messages("player_turn", conn, addr, player_number)

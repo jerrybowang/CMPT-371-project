@@ -43,6 +43,7 @@ class Game:
         # List of ids of the players that have been connected to the game
         self.player_ids = dict()
         self.colors = set()
+        self.hex_colors = []
         self.max_connections = None
         self.player_id_turn = None
         #self.connections = dict() If we need it
@@ -81,11 +82,12 @@ class Game:
 
             self.colors.add(rgb_v)
             generated_rgb = rgb_v
+            self.hex_colors.append(self.rgb_to_hex(generated_rgb))
             generated = True
 
-        return generated_rgb
+        
 
-    def rgb_to_hex(rgb):
+    def rgb_to_hex(self, rgb):
         return '#%02x%02x%02x'  # hex
 
     def add_player(self, id):
@@ -113,7 +115,7 @@ class Game:
             conn.send(winning_message.encode((FORMAT)))
 
     def add_connections(self, conn, add):
-        self.connections.append(conn, add)
+        self.connections.append((conn, add))
 
     def player_turn(self):
         # Generate a random number from 1 to how many players we have in dictionary
@@ -137,7 +139,7 @@ class Game:
 
         if msg[0] == remote:
             message = "remote_press " + \
-                msg[2] + " " + self.rgb_to_hex(self.colors[player_number-1])
+                msg[2] + " " + self.hex_colors[player_number-1]
 
             for index in len(self.connections):
                 if index != 0:
@@ -148,7 +150,7 @@ class Game:
 
         if msg == player_color:
             message_color = "player_color" + \
-                self.rgb_to_hex(self.colors[player_number-1])
+                self.hex_colors[player_number-1]
             conn.send(message_color.encode((FORMAT)))
 
         if msg == player_turn:

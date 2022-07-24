@@ -1,10 +1,11 @@
+from tkinter import Button
 from game import Game
 import socket
 import threading
 import time
 import sys
 import pygame
-
+import random
 
 HEADER = 2048
 PORT = 5555 # port number
@@ -25,6 +26,10 @@ my_game.init_board_game()
 
 threads = []
 
+bomb_list = []
+for i in range(1,16): # choose 16 random numbers to be bombs
+    n = random.randint(1, 256)
+    bomb_list.append(n)
 
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -71,20 +76,24 @@ def process_client(conn, addr, player_number):
 
             if data:
                 msg = msg.split(" ")
+                button_number = int(msg[2])
                 if msg[0] == Pressed:
                     msg[0] = "remote_press"
                     my_game.handle_messages(msg, conn, addr, player_number)
+            
 
-                # CASE: when the player has died
-                # if check_player_died():
-                #   my_game.handle_messages("end", conn, addr, player_number)
-                #   connected = False
+                    # CASE: when the player has died
+                    if check_player_died(button_number):
+                    #   my_game.handle_messages("end", conn, addr, player_number)
+                        connected = False
 
-                # CASE: when the player has won
-                # if check_player_won():
-                #   my_game.handle_messages("display", conn, addr, player_number)
-                #   connected = False
+                    # CASE: when the player has won
+                    if check_player_won():
+                    #   my_game.handle_messages("display", conn, addr, player_number)
+                        print(f"Player {msg[1]} is winner")
+                        connected = False
 
+              
             # Give chance to the next player
             my_game.player_turn()
             my_game.handle_messages("player_turn", conn, addr, player_number)
@@ -94,6 +103,19 @@ def process_client(conn, addr, player_number):
 
     conn.close()
 
+def check_player_died(button_number):
+    if button_number in bomb_list:
+        print("PLAYER DIED")
+        player_num -= 1
+        return True
+    else:
+        return False
+
+def check_player_won():
+    if player_num <= 1:
+        return True
+    else:
+        return False
 
 def wait_clients_finish():
     for index in range(len(threads)):
@@ -134,6 +156,7 @@ def start():
             wait_clients_finish()
             run = False
 
+    
 
 print("Please enter maximum player number for current game")
 start()

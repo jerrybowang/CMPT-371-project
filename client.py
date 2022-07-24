@@ -171,6 +171,7 @@ def process_msg(msg):
     global message
 
     d_msg = msg.decode()
+    print(d_msg)
     command = d_msg.split(" ")
     if command[0] == "end":
         game_ended = True

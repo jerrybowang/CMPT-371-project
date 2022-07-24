@@ -4,6 +4,7 @@ import threading
 import time
 import sys
 import pygame
+import numpy
 
 
 HEADER = 2048
@@ -134,6 +135,12 @@ def start():
             wait_clients_finish()
             run = False
 
+def bombs():
+    bomb_list = []
+    for i in range(1,16): # choose 16 random numbers to be bombs
+        n = random.randint(1, 256)
+        bomb_list.append(n)
+    return bomb_list
 
 print("Please enter maximum player number for current game")
 start()

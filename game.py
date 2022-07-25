@@ -1,4 +1,5 @@
 # generate random integer values
+import time
 from random import seed
 from random import randint
 import random
@@ -138,7 +139,7 @@ class Game:
 
             for index in range(len(self.connections)):
                 if self.player_ids[index+1] == True:
-                    self.connections[index][0].send(message.encode((FORMAT)))
+                    self.connections[index][0].sendall(message.encode((FORMAT)))
                 else:
                     continue
 
@@ -155,7 +156,7 @@ class Game:
             message_turn = "player_turn " + str(self.player_id_turn)
             for index in range(len(self.connections)):
                 if self.player_ids[index+1] == True:
-                    self.connections[index][0].send(message_turn.encode((FORMAT))) 
+                    self.connections[index][0].sendall(message_turn.encode((FORMAT)))
                 else:
                     continue     
 
@@ -168,7 +169,7 @@ class Game:
             address = (str(addr))
             address = "IP and port is: " + address
             print(f"[{addr}] {msg}")
-            conn.send(address.encode((FORMAT)))
+            conn.sendall(address.encode((FORMAT)))
 
     def check_player_won(self):
         if len(self.bomb_list) == 0 or self.number_player_alive <= 1:

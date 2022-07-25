@@ -49,7 +49,7 @@ def process_client(conn, addr, player_number):
                 if msg[0] == Pressed:
                     msg[0] = "remote_press"
                     my_game.handle_messages(msg, conn, addr, player_number)
-            
+
 
                     # CASE: when the player has died
                     if my_game.check_player_died(button_number, player_number):
@@ -63,7 +63,7 @@ def process_client(conn, addr, player_number):
                        # print(f"Player {msg[1]} is winner")
                        connected = False
 
-              
+
             # Give chance to the next player
             if my_game.check_player_won() == False:
                 my_game.player_turn()
@@ -72,7 +72,7 @@ def process_client(conn, addr, player_number):
         else:
             continue
 
-    conn.close()
+    # conn.close()
 
 # def check_player_died(button_number):
 #     if button_number in bomb_list:

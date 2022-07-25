@@ -97,13 +97,15 @@ class Game:
 
     def send_player_died(self, conn):
         end_message = "end"
-        conn.send(end_message.encode((FORMAT)))
+        conn.sendall(end_message.encode((FORMAT)))
 
     def send_player_won(self):
         for i in range(self.max_connections):
             if self.player_ids[i+1] == True:
                 winning_message = 'display "You Won"'
-                self.connections[i][0].send(winning_message.encode((FORMAT)))
+                self.connections[i][0].sendall(winning_message.encode((FORMAT)))
+                time.sleep(0.1)
+                self.connections[i][0].sendall("end".encode((FORMAT)))
                 self.game_done = True
 
 

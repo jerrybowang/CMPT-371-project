@@ -30,7 +30,6 @@ def process_client(conn, addr, player_number):
     connected = True
 
     my_game.handle_messages("player#", conn, addr, player_number)
-    time.sleep(0.1)
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
     print("Player turn: " + str(my_game.player_id_turn))

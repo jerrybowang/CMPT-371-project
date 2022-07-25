@@ -2,6 +2,7 @@
 from random import seed
 from random import randint
 import random
+import time
 # seed random number generator
 seed(1)
 
@@ -20,6 +21,7 @@ remote = "remote_press"
 
 number_bombs = randint(40, 100)
 
+# PLAYER LOSE DISPLAY NEEDS TO BE ADDED
 
 # We have a players dictionary in the following format
 
@@ -125,6 +127,7 @@ class Game:
         return msg
 
     def handle_messages(self, msg, conn, addr, player_number):
+        time.sleep(0.1)
         if msg == END:
             print("we will send die message !")
             self.send_player_died(conn)

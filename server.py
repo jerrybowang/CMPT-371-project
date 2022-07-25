@@ -10,7 +10,7 @@ import random
 HEADER = 2048
 PORT = 5555 # port number
 host_name = socket.gethostname()
-SERVER = socket.gethostbyname(host_name + ".local") # get local host IP
+SERVER = socket.gethostbyname(host_name) # get local host IP
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 Pressed = "pressed"
@@ -30,7 +30,7 @@ def process_client(conn, addr, player_number):
     connected = True
 
     my_game.handle_messages("player#", conn, addr, player_number)
-    time.sleep(0.1)
+    # time.sleep(0.1)
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
     print("Player turn: " + str(my_game.player_id_turn))

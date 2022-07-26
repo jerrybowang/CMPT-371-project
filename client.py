@@ -174,6 +174,7 @@ def process_msg(msg):
     print(d_msg)
     command = d_msg.split(" ")
     if command[0] == "end":
+        message[1].change_msg(f"Game over")
         game_ended = True
     elif command[0] == "player#":
         player_number = int(command[1])

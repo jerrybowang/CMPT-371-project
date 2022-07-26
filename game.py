@@ -56,7 +56,7 @@ class Game:
         for i in range(self.max_connections):
             self.player_ids[i+1] = True
 
-        while len(self.bomb_list) < 256:
+        while len(self.bomb_list) < 10:
             n = random.randint(1, 256)
             if n in self.bomb_list:
                 continue
@@ -121,24 +121,13 @@ class Game:
         # Give player turn based on order
         if self.player_id_turn == -1:
             self.player_id_turn = 1
-        elif self.player_id_turn == self.max_connections:
-            self.player_id_turn = 1
-            if self.player_ids[self.player_id_turn] == False:
-                generated_live_player = False
-                player_id = 1
-                while not generated_live_player:
-                    player_id += 1
-                    self.player_id_turn = player_id
-                    if self.player_ids[self.player_id_turn] == False:
-                        continue
-                    else:
-                        generated_live_player = True
-
         else:
             generated_live_player = False
-            player_id = 1
+            player_id = self.player_id_turn
             while not generated_live_player:
-                player_id += 1 
+                player_id += 1
+                if player_id > self.max_connections:
+                    player_id = 1 
                 self.player_id_turn = player_id
                 if self.player_ids[self.player_id_turn] == False:
                     continue

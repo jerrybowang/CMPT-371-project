@@ -80,19 +80,7 @@ def process_client(conn, addr, player_number):
 
     # conn.close()
 
-# def check_player_died(button_number):
-#     if button_number in bomb_list:
-#         print("PLAYER DIED")
-#         number_player_alive -= 1
-#         return True
-#     else:
-#         return False
 
-# def check_player_won():
-#     if number_player_alive <= 1:
-#         return True
-#     else:
-#         return False
 
 def wait_clients_finish():
     for index in range(len(threads)):

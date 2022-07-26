@@ -22,8 +22,6 @@ remote = "remote_press"
 
 number_bombs = randint(40, 100)
 
-# PLAYER LOSE DISPLAY NEEDS TO BE ADDED
-
 # We have a players dictionary in the following format
 
 # {1: True, 2: False}
@@ -43,22 +41,18 @@ class Game:
         self.colors = set()
         self.hex_colors = []
         self.max_connections = None
-        self.player_id_turn = None
+        self.player_id_turn = -1
         self.number_player_alive = None
         self.game_done = False
-        #self.connections = dict() If we need it
+        self.bomb_color = '#ff0000'
+
+        #self.positions_nonBomb = []
 
     def init_board_game(self):
-        # self.board = [[0 for _ in range(self.column)] for _ in range(self.row)]
+        rgb = 255, 0, 0
+        self.colors.add(rgb)
 
-        # while len(self.bombs_positions) < number_bombs:
-        #     random_row = random.randrange(0,self.row)
-        #     random_column = random.randrange(0,self.column)
-        #     pos = random_row, random_column
-        #     if pos in self.bombs_positions:
-        #          continue
-        #     self.bombs_positions.add(pos)
-        #     self.board[random_row][random_column] = 1
+
         for i in range(self.max_connections):
             self.player_ids[i+1] = True
 
@@ -67,6 +61,12 @@ class Game:
             if n in self.bomb_list:
                 continue
             self.bomb_list.append(n)
+        
+        # for i in range(256):
+        #     if i+1 in self.bomb_list:
+        #         continue
+        #     self.positions_nonBomb.append(i+1)
+
 
 
     def set_max_connections(self, max_connection):
@@ -98,6 +98,9 @@ class Game:
         self.generate_random_rgb()
 
     def send_player_died(self, conn):
+        display_message = 'display "You died"'
+        conn.sendall(display_message.encode(FORMAT))
+        time.sleep(0.1)
         end_message = "end"
         conn.sendall(end_message.encode((FORMAT)))
 
@@ -115,15 +118,32 @@ class Game:
         self.connections.append((conn, add))
 
     def player_turn(self):
-        # Generate a random number from 1 to how many players we have in dictionary
-        generated_live_player = False
-        while not generated_live_player:
-            player_id = random.randint(1, self.max_connections)
-            self.player_id_turn = player_id
+        # Give player turn based on order
+        if self.player_id_turn == -1:
+            self.player_id_turn = 1
+        elif self.player_id_turn == self.max_connections:
+            self.player_id_turn = 1
             if self.player_ids[self.player_id_turn] == False:
-                continue
-            else:
-                generated_live_player = True
+                generated_live_player = False
+                player_id = 1
+                while not generated_live_player:
+                    player_id += 1
+                    self.player_id_turn = player_id
+                    if self.player_ids[self.player_id_turn] == False:
+                        continue
+                    else:
+                        generated_live_player = True
+
+        else:
+            generated_live_player = False
+            player_id = 1
+            while not generated_live_player:
+                player_id += 1 
+                self.player_id_turn = player_id
+                if self.player_ids[self.player_id_turn] == False:
+                    continue
+                else:
+                    generated_live_player = True
 
     def read_message(msg):
         msg = msg.split(",")
@@ -136,8 +156,14 @@ class Game:
             self.send_player_died(conn)
 
         if msg[0] == remote:
-            message = "remote_press " + \
-                msg[2] + " " + self.hex_colors[player_number-1]
+            button_number = int(msg[2])
+            message = "remote_press " + msg[2] + " "
+            if button_number in self.bomb_list:
+                print("Here")
+                message += self.bomb_color
+            else:
+                print("Here 2")
+                message += self.hex_colors[player_number-1]
 
             for index in range(len(self.connections)):
                 if self.player_ids[index+1] == True:
@@ -174,6 +200,7 @@ class Game:
             conn.sendall(address.encode((FORMAT)))
 
     def check_player_won(self):
+        # or len(self.positions_nonBomb) == 0
         if len(self.bomb_list) == 0 or self.number_player_alive <= 1:
             return True
         else:
@@ -187,4 +214,5 @@ class Game:
             self.bomb_list.remove(button_number)
             return True
         else:
+            #self.positions_nonBomb.remove(button_number)
             return False

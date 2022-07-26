@@ -30,6 +30,7 @@ my_game = Game()
 threads = []
 
 mutex = threading.Lock()
+# critical recourse
 ready_client = 0
 
 
@@ -51,7 +52,7 @@ def process_client(conn, addr, player_number):
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
     print("Player turn: " + str(my_game.player_id_turn))
-    # update ready number
+    # finished set up, update ready number
     update_ready()
 
     while connected:
@@ -91,6 +92,7 @@ def process_client(conn, addr, player_number):
         else:
             continue
 
+    # client will handle conn.close(), indicated by end token
     # conn.close()
 
 
@@ -132,6 +134,7 @@ def start():
         threads.append(thread)
         print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
         if len(my_game.connections) == max_connections:
+            # spinlock, wait until ALL clients are ready
             while ready_client != max_connections:
                 time.sleep(1)
 

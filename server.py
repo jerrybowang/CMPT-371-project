@@ -119,6 +119,7 @@ def start():
         threads.append(thread)
         print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
         if len(my_game.connections) == max_connections:
+            time.sleep(0.1)
             my_game.handle_messages("player_turn", conn, addr, player_number)
             wait_clients_finish()
             run = False

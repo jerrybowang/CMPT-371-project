@@ -148,10 +148,10 @@ class Game:
             button_number = int(msg[2])
             message = "remote_press " + msg[2] + " "
             if button_number in self.bomb_list:
-                print("Here")
+                # print("Here")
                 message += self.bomb_color
             else:
-                print("Here 2")
+                # print("Here 2")
                 message += self.hex_colors[player_number-1]
 
             for index in range(len(self.connections)):

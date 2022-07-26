@@ -29,6 +29,17 @@ my_game = Game()
 
 threads = []
 
+mutex = threading.Lock()
+ready_client = 0
+
+
+def update_ready():
+    global ready_client
+    global mutex
+    mutex.acquire()
+    ready_client += 1
+    mutex.release()
+
 
 def process_client(conn, addr, player_number):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -40,6 +51,8 @@ def process_client(conn, addr, player_number):
     my_game.generate_color_player()
     my_game.handle_messages("player_colour", conn, addr, player_number)
     print("Player turn: " + str(my_game.player_id_turn))
+    # update ready number
+    update_ready()
 
     while connected:
         if my_game.game_done == True:
@@ -119,6 +132,9 @@ def start():
         threads.append(thread)
         print(f"[ACTIVE CONNECTION] {threading.activeCount() - 1}")
         if len(my_game.connections) == max_connections:
+            while ready_client != max_connections:
+                time.sleep(1)
+
             time.sleep(0.1)
             my_game.handle_messages("player_turn", conn, addr, player_number)
             wait_clients_finish()

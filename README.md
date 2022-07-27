@@ -7,7 +7,7 @@ The game board is a 16x16 shared grid with n players:
 - Each round the grid is randomly populated with bombs
 - Players take turns selecting a box, if the player chooses a box with a bomb, the player dies and exits the game
 - After a player selects a box with no bomb, the box turns into the player's colour and can no longer be selected
-- Last player alive wins
+- Last player alive wins/ If all the bombs are selected the remaining players will win the game
 
 
 ## Token scheme

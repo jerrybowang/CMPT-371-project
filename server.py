@@ -8,13 +8,13 @@ import pygame
 import random
 
 HEADER = 2048
-PORT = 5555 # port number
+PORT = 5555  # port number
 
 # host_name = socket.gethostname()
 # SERVER = socket.gethostbyname(host_name) # get local host IP
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
-SERVER = s.getsockname()[0] # get local host IP
+SERVER = s.getsockname()[0]  # get local host IP
 s.close()
 
 ADDR = (SERVER, PORT)
@@ -70,19 +70,17 @@ def process_client(conn, addr, player_number):
                     msg[0] = "remote_press"
                     my_game.handle_messages(msg, conn, addr, player_number)
 
-
                     # CASE: when the player has died
                     if my_game.check_player_died(button_number, player_number):
-                       my_game.handle_messages("end", conn, addr, player_number)
-                       print("Died message sent!")
-                       connected = False
+                        my_game.handle_messages("end", conn, addr, player_number)
+                        print("Died message sent!")
+                        connected = False
 
                     # CASE: when the player has won
                     if my_game.check_player_won():
-                       my_game.handle_messages("display", conn, addr, player_number)
-                       # print(f"Player {msg[1]} is winner")
-                       connected = False
-
+                        my_game.handle_messages("display", conn, addr, player_number)
+                        # print(f"Player {msg[1]} is winner")
+                        connected = False
 
             # Give chance to the next player
             if my_game.check_player_won() == False:
@@ -92,14 +90,13 @@ def process_client(conn, addr, player_number):
         else:
             continue
 
-    # client will handle conn.close(), indicated by end token
-    # conn.close()
-
+    conn.close()
 
 
 def wait_clients_finish():
     for index in range(len(threads)):
         threads[index].join()
+
 
 def start():
     player_number = 0
@@ -107,7 +104,7 @@ def start():
     max_connections = int(input("Enter a number: "))
     my_game.set_max_connections(max_connections)
     my_game.init_board_game()
-    
+
     # Determine whose turn is it
     my_game.player_turn()
     server.listen()
@@ -143,13 +140,6 @@ def start():
             wait_clients_finish()
             run = False
 
-    
 
 print("Please enter maximum player number for current game")
 start()
-
-
-        
-
-
-

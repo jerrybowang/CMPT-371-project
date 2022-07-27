@@ -36,6 +36,7 @@ player_colour = '#333333'
 # used for receive_msg_thread
 game_ended = False
 
+
 class Button():
     def __init__(self, x, y, width, height, id, buttonText='Button', onclickFunction=None):
         self.x = x
@@ -129,7 +130,7 @@ class MsgBox():
 
     def change_txt_colour(self, colour: str):
         h = colour.lstrip('#')
-        self.text_colour = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+        self.text_colour = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
     def process(self):
         global my_turn
@@ -145,6 +146,7 @@ class MsgBox():
             self.buttonRect.height / 2 - self.buttonSurf.get_rect().height / 2
         ])
         screen.blit(self.buttonSurface, self.buttonRect)
+
 
 def send_msg(button):
     global conn
@@ -206,7 +208,7 @@ class Network():
     def __init__(self):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # get ip from user
-        
+
         self.conn.connect((ip, port))
 
         # we do need receive function to be a blocking call
@@ -252,7 +254,6 @@ class Network():
 
 
 conn = Network()
-
 
 # initialize map (16x16)
 for i in range(16):

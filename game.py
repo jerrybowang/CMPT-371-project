@@ -4,6 +4,7 @@ from random import seed
 from random import randint
 import random
 import time
+
 # seed random number generator
 seed(1)
 
@@ -21,6 +22,7 @@ display = "display"
 remote = "remote_press"
 
 number_bombs = randint(40, 100)
+
 
 # We have a players dictionary in the following format
 
@@ -46,28 +48,25 @@ class Game:
         self.game_done = False
         self.bomb_color = '#ff0000'
 
-        #self.positions_nonBomb = []
+        # self.positions_nonBomb = []
 
     def init_board_game(self):
         rgb = 255, 0, 0
         self.colors.add(rgb)
 
-
         for i in range(self.max_connections):
-            self.player_ids[i+1] = True
+            self.player_ids[i + 1] = True
 
         while len(self.bomb_list) < 10:
             n = random.randint(1, 256)
             if n in self.bomb_list:
                 continue
             self.bomb_list.append(n)
-        
+
         # for i in range(256):
         #     if i+1 in self.bomb_list:
         #         continue
         #     self.positions_nonBomb.append(i+1)
-
-
 
     def set_max_connections(self, max_connection):
         self.max_connections = max_connection
@@ -85,11 +84,9 @@ class Game:
                 continue
 
             self.colors.add(rgb_v)
-            self.hex_colors.append(self.rgb_to_hex(r,g,b))
+            self.hex_colors.append(self.rgb_to_hex(r, g, b))
             print("RGB" + str(r) + str(g) + str(b))
             generated = True
-
-    
 
     def rgb_to_hex(self, r, g, b):
         return "#{:02x}{:02x}{:02x}".format(r, g, b)
@@ -106,13 +103,12 @@ class Game:
 
     def send_player_won(self):
         for i in range(self.max_connections):
-            if self.player_ids[i+1] == True:
+            if self.player_ids[i + 1] == True:
                 winning_message = 'display "You Won"'
                 self.connections[i][0].sendall(winning_message.encode((FORMAT)))
                 time.sleep(0.1)
                 self.connections[i][0].sendall("end".encode((FORMAT)))
                 self.game_done = True
-
 
     def add_connections(self, conn, add):
         self.connections.append((conn, add))
@@ -127,7 +123,7 @@ class Game:
             while not generated_live_player:
                 player_id += 1
                 if player_id > self.max_connections:
-                    player_id = 1 
+                    player_id = 1
                 self.player_id_turn = player_id
                 if self.player_ids[self.player_id_turn] == False:
                     continue
@@ -152,10 +148,10 @@ class Game:
                 message += self.bomb_color
             else:
                 # print("Here 2")
-                message += self.hex_colors[player_number-1]
+                message += self.hex_colors[player_number - 1]
 
             for index in range(len(self.connections)):
-                if self.player_ids[index+1] == True:
+                if self.player_ids[index + 1] == True:
                     self.connections[index][0].sendall(message.encode((FORMAT)))
                 else:
                     continue
@@ -165,17 +161,17 @@ class Game:
 
         if msg == player_color:
             message_color = "player_colour " + \
-                self.hex_colors[player_number-1]
-            print(self.hex_colors[player_number-1])
+                            self.hex_colors[player_number - 1]
+            print(self.hex_colors[player_number - 1])
             conn.sendall(message_color.encode((FORMAT)))
 
         if msg == player_turn:
             message_turn = "player_turn " + str(self.player_id_turn)
             for index in range(len(self.connections)):
-                if self.player_ids[index+1] == True:
+                if self.player_ids[index + 1] == True:
                     self.connections[index][0].sendall(message_turn.encode((FORMAT)))
                 else:
-                    continue     
+                    continue
 
         if msg == player_num:
             player_number = str(player_number)
@@ -203,5 +199,5 @@ class Game:
             self.bomb_list.remove(button_number)
             return True
         else:
-            #self.positions_nonBomb.remove(button_number)
+            # self.positions_nonBomb.remove(button_number)
             return False

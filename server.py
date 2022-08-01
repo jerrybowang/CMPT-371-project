@@ -1,11 +1,9 @@
 # imports 
-from tkinter import Button
 from game import Game
 import socket
 import threading
 import time
 import sys
-import pygame
 import random
 
 HEADER = 2048
@@ -41,6 +39,7 @@ def update_ready():
     mutex.acquire()
     ready_client += 1
     mutex.release()
+
 
 # receives messaging from client and determines if player (client) dies (then closes the connection)
 def process_client(conn, addr, player_number):
@@ -93,10 +92,12 @@ def process_client(conn, addr, player_number):
 
     conn.close()
 
+
 # assigns each client to seperate thread
 def wait_clients_finish():
     for index in range(len(threads)):
         threads[index].join()
+
 
 # prompts user to enter number of players and displays address and port info
 def start():

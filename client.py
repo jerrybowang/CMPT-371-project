@@ -36,6 +36,7 @@ player_colour = '#333333'
 # used for receive_msg_thread
 game_ended = False
 
+
 # button class - the board GUI is populated with 256 buttons
 class Button():
     def __init__(self, x, y, width, height, id, buttonText='Button', onclickFunction=None):
@@ -102,6 +103,7 @@ class Button():
         ])
         screen.blit(self.buttonSurface, self.buttonRect)
 
+
 # Message box to display to user their player number/colour and which player's turn is it
 class MsgBox():
     def __init__(self, x, y, width, height, buttonText='Button'):
@@ -147,6 +149,7 @@ class MsgBox():
         ])
         screen.blit(self.buttonSurface, self.buttonRect)
 
+
 # sends message with pressed button data and corresponding player id to server
 def send_msg(button):
     global conn
@@ -160,8 +163,10 @@ def send_msg(button):
     conn.conn.sendall(bytes(msg, encoding='utf8'))
 
 
+# a testing function for onclickFunction in button
 def send_msg_test(button):
     print(f"pressed {player_number} {button.id}")
+
 
 # receives message from server about game status (e.g. game ended, assigned player number/colour, who's turn is it)
 def process_msg(msg):
@@ -175,6 +180,8 @@ def process_msg(msg):
     d_msg = msg.decode()
     print(d_msg)
     command = d_msg.split(" ")
+
+    # if tree for token process, ignore irrelevant message
     if command[0] == "end":
         message[1].change_msg(f"Game over")
         game_ended = True

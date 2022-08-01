@@ -1,5 +1,4 @@
 # generate random integer values
-import time
 from random import seed
 from random import randint
 import random

@@ -135,9 +135,6 @@ class MsgBox():
         self.text_colour = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
     def process(self):
-        global my_turn
-        global game_ended
-        global player_colour
 
         self.buttonSurface.fill(self.fillColors['normal'])
         self.buttonSurf = font.render(self.msg, True, self.text_colour)
@@ -176,6 +173,7 @@ def process_msg(msg):
     global game_ended
     global my_turn
     global message
+    global buttons
 
     d_msg = msg.decode()
     print(d_msg)

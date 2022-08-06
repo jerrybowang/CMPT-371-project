@@ -1,4 +1,3 @@
-# generate random integer values
 from random import seed
 from random import randint
 import random
@@ -7,7 +6,7 @@ import time
 # seed random number generator
 seed(1)
 
-# Will be changed
+
 HEADER = 2048
 PORT = 5555
 FORMAT = 'utf-8'
@@ -46,9 +45,7 @@ class Game:
         self.number_player_alive = None
         self.game_done = False
         self.bomb_color = '#ff0000'
-
-        # self.positions_nonBomb = []
-
+# initialize the board and populate the bombs
     def init_board_game(self):
         rgb = 255, 0, 0
         self.colors.add(rgb)
@@ -62,15 +59,12 @@ class Game:
                 continue
             self.bomb_list.append(n)
 
-        # for i in range(256):
-        #     if i+1 in self.bomb_list:
-        #         continue
-        #     self.positions_nonBomb.append(i+1)
-
+    # Set the maximum number of connections that is connected to the server
     def set_max_connections(self, max_connection):
         self.max_connections = max_connection
         self.number_player_alive = max_connection
 
+    # Generate a random RGB color
     def generate_random_rgb(self):
         generated = False
         while not generated:
@@ -90,8 +84,10 @@ class Game:
     def rgb_to_hex(self, r, g, b):
         return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
+    # Generate unique color for each player with the help of generate_random_rgb fucntion
     def generate_color_player(self):
         self.generate_random_rgb()
+
 
     def send_player_died(self, conn):
         display_message = 'display "You died"'
@@ -109,11 +105,13 @@ class Game:
                 self.connections[i][0].sendall("end".encode((FORMAT)))
                 self.game_done = True
 
+
     def add_connections(self, conn, add):
         self.connections.append((conn, add))
 
+    # Give player turn based on particular order
     def player_turn(self):
-        # Give player turn based on order
+        
         if self.player_id_turn == -1:
             self.player_id_turn = 1
         else:
@@ -133,6 +131,7 @@ class Game:
         msg = msg.split(",")
         return msg
 
+    # A handler which can handle different messages sent by the client
     def handle_messages(self, msg, conn, addr, player_number):
         time.sleep(0.1)
         if msg == END:
@@ -143,10 +142,8 @@ class Game:
             button_number = int(msg[2])
             message = "remote_press " + msg[2] + " "
             if button_number in self.bomb_list:
-                # print("Here")
                 message += self.bomb_color
             else:
-                # print("Here 2")
                 message += self.hex_colors[player_number - 1]
 
             for index in range(len(self.connections)):
@@ -184,7 +181,7 @@ class Game:
             conn.sendall(address.encode((FORMAT)))
 
     def check_player_won(self):
-        # or len(self.positions_nonBomb) == 0
+        
         if len(self.bomb_list) == 0 or self.number_player_alive <= 1:
             return True
         else:
@@ -198,5 +195,4 @@ class Game:
             self.bomb_list.remove(button_number)
             return True
         else:
-            # self.positions_nonBomb.remove(button_number)
             return False

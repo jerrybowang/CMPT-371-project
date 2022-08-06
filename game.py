@@ -138,6 +138,7 @@ class Game:
             print("we will send die message !")
             self.send_player_died(conn)
 
+        #   Broadcase a remote message to clients telling them a player has pressed a button and the color of the button
         if msg[0] == remote:
             button_number = int(msg[2])
             message = "remote_press " + msg[2] + " "
@@ -150,17 +151,20 @@ class Game:
                 if self.player_ids[index + 1] == True:
                     self.connections[index][0].sendall(message.encode((FORMAT)))
                 else:
-                    continue
+                   continue
 
+        # Send a display message to client 
         if msg == display:
             self.send_player_won()
 
+        # Send a player color to the client 
         if msg == player_color:
             message_color = "player_colour " + \
                             self.hex_colors[player_number - 1]
             print(self.hex_colors[player_number - 1])
             conn.sendall(message_color.encode((FORMAT)))
 
+        # Telling clients which player's turn is it right now
         if msg == player_turn:
             message_turn = "player_turn " + str(self.player_id_turn)
             for index in range(len(self.connections)):
@@ -168,12 +172,13 @@ class Game:
                     self.connections[index][0].sendall(message_turn.encode((FORMAT)))
                 else:
                     continue
-
+        
+        # Telling client its player number
         if msg == player_num:
             player_number = str(player_number)
             player_number = "player# " + player_number
             conn.sendall(player_number.encode((FORMAT)))
-
+        
         if msg == IP_and_Port:
             address = (str(addr))
             address = "IP and port is: " + address
